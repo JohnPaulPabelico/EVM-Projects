@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { contractAddress, contractABI } from "@/lib/contract";
 import { MetaMaskInpageProvider } from "@metamask/providers";
@@ -42,6 +42,10 @@ export default function CounterDApp() {
       alert("Please install MetaMask.");
     }
   };
+
+  useEffect(() => {
+    connectWallet();
+  }, []);
 
   const fetchCounter = async (contractInstance: ethers.Contract) => {
     if (contractInstance) {
