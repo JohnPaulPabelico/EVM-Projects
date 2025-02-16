@@ -1,0 +1,20 @@
+{
+  "name": "My Nft",
+  "description": "My nft description",
+  "symbol": "NFT",
+  "image": "https://i.imgur.com/8onNWzz.png",
+  "attributes": [
+    {
+      "trait_type": "Hair",
+      "value": "Oblak"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Cap"
+    },
+    {
+      "trait_type": "Face",
+      "value": "Glasses"
+    }
+  ]
+}
