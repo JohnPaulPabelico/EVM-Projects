@@ -1,0 +1,8 @@
+{
+  "base-sepolia": {
+    "Selyo-Base": {
+      "address": "0x2140aEC1Bb741A937525B2876A86C0fE176F415E",
+      "startBlock": 22999390
+    }
+  }
+}
