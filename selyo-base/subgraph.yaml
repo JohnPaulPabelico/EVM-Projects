@@ -5,11 +5,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Selyo-Base
+    name: SelyoBase
     network: base-sepolia
     source:
       address: "0x2140aEC1Bb741A937525B2876A86C0fE176F415E"
-      abi: Selyo-Base
+      abi: SelyoBase
       startBlock: 22999390
     mapping:
       kind: ethereum/events
@@ -27,8 +27,8 @@ dataSources:
         - TransferSingle
         - URI
       abis:
-        - name: Selyo-Base
-          file: ./abis/Selyo-Base.json
+        - name: SelyoBase
+          file: ./abis/SelyoBase.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll

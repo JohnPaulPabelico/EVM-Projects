@@ -20,8 +20,10 @@ import {
   TokensMinted,
   TransferBatch,
   TransferSingle,
-  URI
+  URI,
+  AccountTokenBalance
 } from "../generated/schema"
+import { BigInt, store } from "@graphprotocol/graph-ts"
 
 export function handleApprovalForAll(event: ApprovalForAllEvent): void {
   let entity = new ApprovalForAll(
@@ -142,21 +144,45 @@ export function handleTransferBatch(event: TransferBatchEvent): void {
   entity.save()
 }
 
-export function handleTransferSingle(event: TransferSingleEvent): void {
-  let entity = new TransferSingle(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.operator = event.params.operator
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.internal_id = event.params.id
-  entity.value = event.params.value
+export function handleTransferSingle(event: TransferSingle): void {
+  let tokenId = event.params.id;
+  let from = event.params.from;
+  let to = event.params.to;
+  let value = event.params.value;
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
+  // Update sender's balance
+  if (from.toHexString() != "0x0000000000000000000000000000000000000000") {
+    let senderBalanceId = from.toHexString() + "-" + tokenId.toString();
+    let senderBalance = AccountTokenBalance.load(senderBalanceId);
 
-  entity.save()
+    if (senderBalance == null) {
+      senderBalance = new AccountTokenBalance(senderBalanceId);
+      senderBalance.account = from;
+      senderBalance.tokenId = tokenId;
+      senderBalance.balance = BigInt.fromI32(0);
+    }
+
+    senderBalance.balance = senderBalance.balance.minus(value);
+    if (senderBalance.balance.equals(BigInt.fromI32(0))) {
+      store.remove("AccountTokenBalance", senderBalanceId);
+    } else {
+      senderBalance.save();
+    }
+  }
+
+  // Update recipient's balance
+  let recipientBalanceId = to.toHexString() + "-" + tokenId.toString();
+  let recipientBalance = AccountTokenBalance.load(recipientBalanceId);
+
+  if (recipientBalance == null) {
+    recipientBalance = new AccountTokenBalance(recipientBalanceId);
+    recipientBalance.account = to;
+    recipientBalance.tokenId = tokenId;
+    recipientBalance.balance = BigInt.fromI32(0);
+  }
+
+  recipientBalance.balance = recipientBalance.balance.plus(value);
+  recipientBalance.save();
 }
 
 export function handleURI(event: URIEvent): void {
